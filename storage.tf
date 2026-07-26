@@ -7,3 +7,4 @@ resource "azurerm_storage_account" "explistg" {
     account_replication_type = "LRS"
   
 }
+# Added validation practice
