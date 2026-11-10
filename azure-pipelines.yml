@@ -1,0 +1,27 @@
+
+trigger:
+  - main
+
+pool:
+  name: 'YOUR-AGENT-POOL'
+
+steps:
+  - checkout: self
+
+  - script: |
+      terraform version
+    displayName: 'Check Terraform Installation'
+
+  - task: AzureCLI@2
+    displayName: 'Terraform Init Validate Plan'
+    inputs:
+      azureSubscription: 'Azure-Terraform-Connection'
+      scriptType: bash
+      scriptLocation: inlineScript
+      workingDirectory: '$(Build.SourcesDirectory)'
+      inlineScript: |
+        export ARM_USE_CLI=true
+
+        terraform init
+        terraform validate
+        terraform plan
