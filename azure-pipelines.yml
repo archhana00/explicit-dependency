@@ -3,7 +3,7 @@ trigger:
   - main
 
 pool:
-  name: 'YOUR-AGENT-POOL'
+  name: 'archhana-agentpool'
 
 steps:
   - checkout: self
@@ -20,6 +20,8 @@ steps:
       scriptLocation: inlineScript
       workingDirectory: '$(Build.SourcesDirectory)'
       inlineScript: |
+              set -e
+
         export ARM_USE_CLI=true
 
         terraform init
