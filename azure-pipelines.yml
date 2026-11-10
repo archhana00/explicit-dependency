@@ -20,7 +20,7 @@ steps:
       scriptLocation: inlineScript
       workingDirectory: '$(Build.SourcesDirectory)'
       inlineScript: |
-              set -e
+        set -e
         export ARM_USE_CLI=true
 
         terraform init
