@@ -3,26 +3,33 @@ trigger:
   - main
 
 pool:
-  name: 'archhana-agentpool'
+  name: archhana-agentpool
 
 steps:
   - checkout: self
 
   - script: |
+      hostname
       terraform version
-    displayName: 'Check Terraform Installation'
+    displayName: 'Check Windows Agent and Terraform'
 
   - task: AzureCLI@2
     displayName: 'Terraform Init Validate Plan'
     inputs:
       azureSubscription: 'Azure-Terraform-Connection'
-      scriptType: bash
-      scriptLocation: inlineScript
+      scriptType: 'ps'
+      scriptLocation: 'inlineScript'
       workingDirectory: '$(Build.SourcesDirectory)'
       inlineScript: |
-        set -e
-        export ARM_USE_CLI=true
+        $ErrorActionPreference = "Stop"
+
+        $env:ARM_USE_CLI = "true"
 
         terraform init
+        if ($LASTEXITCODE -ne 0) { throw "Terraform init failed" }
+
         terraform validate
+        if ($LASTEXITCODE -ne 0) { throw "Terraform validate failed" }
+
         terraform plan
+        if ($LASTEXITCODE -ne 0) { throw "Terraform plan failed" }
