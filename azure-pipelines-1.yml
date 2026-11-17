@@ -1,0 +1,57 @@
+
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  terraformVersion: '1.9.8'
+
+steps:
+  # Install Terraform
+  - task: Bash@3
+    displayName: 'Install Terraform'
+    inputs:
+      targetType: 'inline'
+      script: |
+        sudo apt-get update
+        sudo apt-get install -y unzip curl
+
+        curl -LO https://releases.hashicorp.com/terraform/$(terraformVersion)/terraform_$(terraformVersion)_linux_amd64.zip
+
+        unzip terraform_$(terraformVersion)_linux_amd64.zip
+
+        sudo mv terraform /usr/local/bin/
+
+        terraform version
+
+  # Azure Login and Terraform
+  - task: AzureCLI@2
+    displayName: 'Terraform Init Validate Plan'
+    inputs:
+      azureSubscription: 'Azure-Terraform-Connection'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+
+        echo "Azure Login Successful"
+
+        az account show
+
+        export ARM_USE_CLI=true
+        export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+
+        echo "Terraform Init"
+        terraform init
+
+        echo "Terraform Format"
+        terraform fmt -check -recursive
+
+        echo "Terraform Validate"
+        terraform validate
+
+        echo "Terraform Plan"
+        terraform plan -out=tfplan
+
+        echo "Terraform Pipeline Completed"
