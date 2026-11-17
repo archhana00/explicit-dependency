@@ -1,4 +1,4 @@
 resource "azurerm_resource_group" "explicitrg" {
-    name = "expli-rg"
-    location = "central india"
+  name     = "expli-rg"
+  location = "Central India"
 }
